@@ -18,7 +18,7 @@ off-line with no Internet connection necessary.
 Instructions for running it on a webserver are intentionally omitted and I do
 not offer support for doing this.
 
-# Indemnty statement
+# Indemnity statement
 I wrote this utility as a member of a local ToastMasters International club,
 but it is written entirely independently by me and is not in any way endorsed
 by them.
