@@ -1,0 +1,177 @@
+<html>
+  <head>
+    <style>
+      body { margin:0; /* reset any browser-default margins */ }
+      #fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        overflow: auto;
+      }
+
+      #elapsed {
+        color:#000;
+        font-size: 45vw;
+        text-align: center;
+      }
+      #actions {
+        background-color:rgba(0, 0, 0, 0.3);
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+      }
+
+      #canvas {
+        width: 100%;
+        height: 100%;
+      }
+
+    </style>
+    <script>
+      var blinky = false;
+      var ticker;
+      var alarm;
+      var elapsed = 0;
+      var min = 60;
+      var max = 120;
+      var grace = 30;
+
+      function secondsToMinsAndSeconds(s) {
+        var secs = s % 60;
+        secs = (secs < 10) ? ("0" + secs) : secs;
+        var ret = {
+          m: parseInt(s/60),
+          s: secs,
+        }
+        return ret;
+      }
+
+      function set_colours() {
+        var fs_element = document.getElementById('fullscreen');
+        var elapsed_element = document.getElementById('elapsed');
+        var half_way = (max+min) / 2;
+
+        if (elapsed >= max) {
+          fs_element.style.backgroundColor = 'red';
+          elapsed_element.style.color = 'white';
+        } else if (elapsed >= half_way) {
+          fs_element.style.backgroundColor = 'yellow';
+          elapsed_element.style.color = 'black';
+        } else if (elapsed >= min) {
+          fs_element.style.backgroundColor = 'green';
+          elapsed_element.style.color = 'white';
+        } else {
+          fs_element.style.backgroundColor = 'white';
+          elapsed_element.style.color = 'gray';
+        }
+      }
+      function paint() {
+        var fs_element = document.getElementById('fullscreen');
+        var elapsed_element = document.getElementById('elapsed');
+        var warning_element = document.getElementById('warning');
+        var m_element = elapsed_element.querySelector('.m');
+        var s_element = elapsed_element.querySelector('.s');
+
+
+        var elapsed_element = document.getElementById('elapsed');
+        if (elapsed >= max + grace ) {
+          clearInterval(ticker);
+          alarm = setInterval(hardlimit, 400);
+          return;
+        }
+        elapsed_element.style.display = 'block';
+        warning_element.style.display = 'none';
+
+        var ms = secondsToMinsAndSeconds(elapsed)
+        console.log('m: ' + ms.m + '    s: ' + ms.s);
+        m_element.innerHTML = ms.m;
+        s_element.innerHTML = ms.s;
+        set_colours();
+
+      }
+
+      function hardlimit() {
+        var elapsed_element = document.getElementById('elapsed');
+        var warning_element = document.getElementById('warning');
+        var fs_element = document.getElementById('fullscreen');
+        elapsed_element.style.display = 'none';
+        warning_element.style.display = 'block';
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "grey";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        var grid_size = 25;
+        for (var x = 0 ; x < canvas.width ; x += (2*grid_size)) {
+            for (var y = 0 ; y < canvas.height ; y += (2*grid_size)) {
+              ctx.fillStyle = "red";
+              ctx.fillRect(x, y, grid_size, grid_size);
+            }
+            for (var y = 0 ; y < canvas.height ; y += (2*grid_size)) {
+              ctx.fillStyle = "red";
+              ctx.fillRect(x+grid_size, y+grid_size, grid_size, grid_size);
+            }
+        }
+        if ( blinky ) {
+          ctx.fillStyle = "white";
+          ctx.font = "bold 30px Arial";
+          ctx.textAlign = 'center';
+          ctx.fillText("STOP", (canvas.width / 2) , (canvas.height / 2) );
+        }
+        blinky = !blinky;
+      }
+
+      function tick() {
+        elapsed++;
+        paint();
+      }
+
+      function start() {
+        console.log('started');
+        ticker = setInterval(tick, 1000);
+        var start_button = document.getElementById('start');
+        start_button.disabled = true;
+      }
+
+      function stop() {
+        console.log('stop');
+        clearInterval(ticker);
+        var start_button = document.getElementById('start');
+        start_button.disabled = false;
+        if (alarm != null) {
+          reset()
+        }
+      }
+
+      function reset() {
+        var start_button = document.getElementById('start');
+        console.log('reset');
+        clearInterval(alarm);
+        if (alarm != null) {
+          start_button.disabled = false;
+        }
+        alarm = null;
+        elapsed = 0;
+        paint();
+      }
+
+  </script>
+</head>
+<body>
+  <div id="fullscreen">
+    <div id="elapsed">
+      <span class="m">0</span>:<span class="s">00</span>
+    </div>
+    <div id="warning">
+      <canvas id="canvas"></canvas>
+    </div>
+    <div id="actions">
+      <input id="start" type="button" value="start" onclick="start()" />
+      <input id="reset" type="button" value="reset" onclick="reset()" />
+      <input id="stop" type="button" value="stop" onclick="stop()" />
+    </div>
+  </div>
+</body>
+</html>
+
