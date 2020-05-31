@@ -34,9 +34,22 @@
       var ticker;
       var alarm;
       var elapsed = 0;
-      var min = 60;
-      var max = 120;
+      var min;
+      var max;
       var grace = 30;
+
+      function getParameterByName(name, url) {
+          if (!url) url = window.location.href;
+          name = name.replace(/[\[\]]/g, '\\$&');
+          var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+	  if (!results) return null;
+          if (!results[2]) return '';
+          return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        max = parseInt(getParameterByName('max')) || 120;
+        min = parseInt(getParameterByName('min')) || 60;
 
       function secondsToMinsAndSeconds(s) {
         var secs = s % 60;
