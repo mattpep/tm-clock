@@ -98,7 +98,6 @@
         warning_element.style.display = 'none';
 
         var ms = secondsToMinsAndSeconds(elapsed)
-        console.log('m: ' + ms.m + '    s: ' + ms.s);
         m_element.innerHTML = ms.m;
         s_element.innerHTML = ms.s;
         set_colours();
@@ -141,14 +140,12 @@
       }
 
       function start() {
-        console.log('started');
         ticker = setInterval(tick, 1000);
         var start_button = document.getElementById('start');
         start_button.disabled = true;
       }
 
       function stop() {
-        console.log('stop');
         clearInterval(ticker);
         var start_button = document.getElementById('start');
         start_button.disabled = false;
@@ -159,7 +156,6 @@
 
       function reset() {
         var start_button = document.getElementById('start');
-        console.log('reset');
         clearInterval(alarm);
         if (alarm != null) {
           start_button.disabled = false;
